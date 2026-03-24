@@ -1,5 +1,3 @@
-// api/validate.js — Dhanda.ai Backend (Groq + Llama 3.3)
-
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -7,81 +5,58 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { idea, sector, budget, stage } = req.body;
-  if (!idea || idea.length < 10) return res.status(400).json({ error: 'Please provide a valid idea' });
-
   try {
-    const result = await callGroq(idea, sector, budget, stage);
-    return res.status(200).json(result);
-  } catch (error) {
-    console.error('Error:', error);
-    return res.status(500).json({ error: error.message });
+    const body = req.body;
+    const idea = body && body.idea ? body.idea : null;
+    if (!idea) return res.status(400).json({ error: 'No idea provided' });
+
+    const groqKey = process.env.GROQ_API_KEY;
+    if (!groqKey) return res.status(500).json({ error: 'GROQ_API_KEY not set in environment variables' });
+
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + groqKey,
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        max_tokens: 4000,
+        temperature: 0.2,
+        messages: [
+          { role: 'system', content: buildPrompt() },
+          { role: 'user', content: 'Validate this startup idea for India: ' + idea + '\n\nReturn ONLY valid JSON.' },
+        ],
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return res.status(500).json({ error: 'Groq error: ' + (data.error ? data.error.message : response.status) });
+    }
+
+    const text = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+    if (!text) return res.status(500).json({ error: 'Empty response from Groq' });
+
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return res.status(500).json({ error: 'No JSON in response', raw: text.slice(0, 200) });
+
+    let parsed;
+    try {
+      parsed = JSON.parse(jsonMatch[0]);
+    } catch (e) {
+      const clean = jsonMatch[0].replace(/[\u0000-\u001F]/g, ' ').replace(/,\s*([}\]])/g, '$1');
+      parsed = JSON.parse(clean);
+    }
+
+    return res.status(200).json(parsed);
+
+  } catch (err) {
+    return res.status(500).json({ error: err.message || 'Unknown server error', stack: err.stack });
   }
 };
 
-async function callGroq(idea, sector, budget, stage) {
-  const systemPrompt = `You are Dhanda.ai — India's most brutally honest startup validator. Built for Bharat, not Silicon Valley.
-
-REAL INDIAN CITY DATA (use these exact numbers):
-Mumbai (Tier 1): Per capita Rs.2,25,000/yr | Startups 18,000 | Internet 82% | VC firms 45 | Competition 9/10 | Trust barrier 4 months
-Delhi (Tier 1): Per capita Rs.3,95,000/yr | Startups 15,000 | Internet 85% | VC firms 38 | Competition 8/10 | Trust barrier 5 months
-Bangalore (Tier 1): Per capita Rs.2,85,000/yr | Startups 25,000 | Internet 85% | VC firms 62 | Competition 9/10 | Trust barrier 2 months
-Hyderabad (Tier 1): Per capita Rs.2,68,000/yr | Startups 12,000 | Internet 80% | VC firms 28 | Competition 7/10 | Trust barrier 3 months
-Chennai (Tier 1): Per capita Rs.2,15,000/yr | Startups 9,000 | Internet 78% | VC firms 18 | Competition 7/10 | Trust barrier 4 months
-Pune (Tier 1): Per capita Rs.1,85,000/yr | Startups 8,500 | Internet 78% | VC firms 15 | Competition 7/10 | Trust barrier 3 months
-Ahmedabad (Tier 2): Per capita Rs.1,65,000/yr | Startups 5,500 | Internet 72% | VC firms 8 | Jugaad 7/10 | Trust barrier 5 months
-Jaipur (Tier 2): Per capita Rs.1,20,000/yr | Startups 3,200 | Internet 65% | VC firms 3 | Jugaad 7/10 | Trust barrier 7 months
-Indore (Tier 2): Per capita Rs.1,35,000/yr | Startups 2,800 | Internet 68% | VC firms 2 | Jugaad 6/10 | Trust barrier 5 months
-Lucknow (Tier 2): Per capita Rs.1,10,000/yr | Startups 2,200 | Internet 62% | VC firms 2 | Jugaad 7/10 | Trust barrier 8 months
-Surat (Tier 2): Per capita Rs.1,75,000/yr | Startups 3,000 | Internet 70% | VC firms 3 | Jugaad 7/10 | Trust barrier 6 months
-Kochi (Tier 2): Per capita Rs.1,55,000/yr | Startups 2,500 | Internet 85% | VC firms 4 | Jugaad 4/10 | Trust barrier 4 months
-Chandigarh (Tier 2): Per capita Rs.1,80,000/yr | Startups 1,800 | Internet 78% | VC firms 2 | Jugaad 5/10 | Trust barrier 4 months
-Coimbatore (Tier 2): Per capita Rs.1,45,000/yr | Startups 2,100 | Internet 70% | VC firms 2 | Jugaad 6/10 | Trust barrier 5 months
-Bhubaneswar (Tier 2): Per capita Rs.1,05,000/yr | Startups 1,200 | Internet 60% | VC firms 1 | Jugaad 7/10 | Trust barrier 7 months
-
-RULES:
-1. Never sugarcoat. If bad say it is bad.
-2. Quote exact numbers from the data above.
-3. Check if jugaad or WhatsApp already solves this.
-4. Think in rupees not dollars.
-5. Be like a strict IIT professor.
-
-Respond ONLY with valid JSON. No markdown. No backticks. No text outside JSON. No newlines in string values.
-
-{"verdict":"STRONG YES or PIVOT NEEDED or HARD NO","verdict_class":"pass or pivot or fail","verdict_summary":"2-3 brutal sentences","ai_opinion":"My honest take is... YES or NO","scores":{"Problem Clarity":75,"Market Size":60,"Willingness to Pay":55,"Competition Risk":45,"Execution Feasibility":50},"score_reasons":{"Problem Clarity":"reason","Market Size":"rupee numbers","Willingness to Pay":"price points","Competition Risk":"competitor names","Execution Feasibility":"challenges"},"city_scores":{"Mumbai":45,"Delhi":50,"Bangalore":55,"Hyderabad":60,"Chennai":55,"Pune":58,"Ahmedabad":62,"Jaipur":65,"Indore":70,"Lucknow":60,"Surat":63,"Kochi":68,"Chandigarh":65,"Coimbatore":67,"Bhubaneswar":55},"market_analysis":"TAM in rupees","competitors":[{"name":"name","type":"Direct or Indirect or Jugaad","city":"city","strength":"strength","weakness":"weakness","threat_level":"High or Medium or Low"}],"jugaad_check":"informal workarounds","cultural_intelligence":"relationship trust analysis","price_sensitivity":"rupee price points","why_scores":"scoring logic","risk_flags":["Risk 1","Risk 2","Risk 3","Risk 4","Risk 5"],"roadmap":["Week 1-2","Week 3-4","Week 5-6","Week 7-8","Week 9-12"],"raw_report":"400 word analysis"}`;
-
-  const userPrompt = 'Validate this startup idea for the Indian market:\n\nIDEA: ' + idea + '\n' + (sector ? 'SECTOR: ' + sector + '\n' : '') + (budget ? 'BUDGET: ' + budget + '\n' : '') + (stage ? 'STAGE: ' + stage + '\n' : '') + '\nUse exact city data. Be brutal. Return ONLY valid JSON.';
-
-  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + process.env.GROQ_API_KEY,
-    },
-    body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
-      max_tokens: 4000,
-      temperature: 0.2,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
-      ],
-    }),
-  });
-
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error ? data.error.message : 'Groq API error: ' + response.status);
-
-  const text = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || '';
-  if (!text) throw new Error('Empty response from AI');
-
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) throw new Error('Could not parse AI response');
-
-  try {
-    return JSON.parse(jsonMatch[0]);
-  } catch (e) {
-    const clean = jsonMatch[0].replace(/[\u0000-\u001F]/g, ' ').replace(/,\s*([}\]])/g, '$1');
-    return JSON.parse(clean);
-  }
+function buildPrompt() {
+  return 'You are Dhanda.ai — India most brutally honest startup validator.\n\nINDIAN CITY DATA:\nMumbai: Rs.2.25L per capita, 18000 startups, 82% internet, 45 VCs, competition 9/10\nDelhi: Rs.3.95L per capita, 15000 startups, 85% internet, 38 VCs, competition 8/10\nBangalore: Rs.2.85L per capita, 25000 startups, 85% internet, 62 VCs, competition 9/10\nHyderabad: Rs.2.68L per capita, 12000 startups, 80% internet, 28 VCs, competition 7/10\nChennai: Rs.2.15L per capita, 9000 startups, 78% internet, 18 VCs, competition 7/10\nPune: Rs.1.85L per capita, 8500 startups, 78% internet, 15 VCs, competition 7/10\nAhmedabad: Rs.1.65L per capita, 5500 startups, 72% internet, 8 VCs, jugaad 7/10\nJaipur: Rs.1.20L per capita, 3200 startups, 65% internet, 3 VCs, jugaad 7/10\nIndore: Rs.1.35L per capita, 2800 startups, 68% internet, 2 VCs, jugaad 6/10\nLucknow: Rs.1.10L per capita, 2200 startups, 62% internet, 2 VCs, jugaad 7/10\nSurat: Rs.1.75L per capita, 3000 startups, 70% internet, 3 VCs, jugaad 7/10\nKochi: Rs.1.55L per capita, 2500 startups, 85% internet, 4 VCs, jugaad 4/10\nChandigarh: Rs.1.80L per capita, 1800 startups, 78% internet, 2 VCs, jugaad 5/10\nCoimbatore: Rs.1.45L per capita, 2100 startups, 70% internet, 2 VCs, jugaad 6/10\nBhubaneswar: Rs.1.05L per capita, 1200 startups, 60% internet, 1 VC, jugaad 7/10\n\nRULES: Never sugarcoat. Quote real numbers. Check jugaad. Think rupees.\n\nReturn ONLY this JSON structure with no markdown or backticks:\n{"verdict":"STRONG YES or PIVOT NEEDED or HARD NO","verdict_class":"pass or pivot or fail","verdict_summary":"2-3 sentences","ai_opinion":"My honest take is...","scores":{"Problem Clarity":70,"Market Size":60,"Willingness to Pay":55,"Competition Risk":50,"Execution Feasibility":55},"score_reasons":{"Problem Clarity":"reason","Market Size":"reason","Willingness to Pay":"reason","Competition Risk":"reason","Execution Feasibility":"reason"},"city_scores":{"Mumbai":50,"Delhi":52,"Bangalore":55,"Hyderabad":60,"Chennai":55,"Pune":58,"Ahmedabad":62,"Jaipur":65,"Indore":70,"Lucknow":60,"Surat":63,"Kochi":68,"Chandigarh":65,"Coimbatore":67,"Bhubaneswar":55},"market_analysis":"analysis","competitors":[{"name":"name","type":"Direct","city":"city","strength":"strength","weakness":"weakness","threat_level":"High"}],"jugaad_check":"analysis","cultural_intelligence":"analysis","price_sensitivity":"analysis","why_scores":"reason","risk_flags":["risk1","risk2","risk3"],"roadmap":["week1","week2","week3","week4","week5"],"raw_report":"full analysis"}';
 }
