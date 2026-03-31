@@ -1,8 +1,0 @@
-{
-  "name": "dhanda-ai",
-  "version": "1.0.0",
-  "description": "India's first brutally honest startup validator",
-  "dependencies": {
-    "node-fetch": "^3.3.2"
-  }
-}
