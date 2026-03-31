@@ -148,6 +148,16 @@ Rules:
 - Return only the completed report with real values; do not include bracket placeholders.
 - Use India-specific reasoning and city-level evidence.
 - Do not output any prompt instructions, metadata, or explanations outside the report.
+- Mandatory: include the exact heading "## PRODUCT-MARKET FIT (PMF) ANALYSIS".
+- Mandatory: include all PMF subsections exactly:
+  - "### PMF SCORE (0-10)"
+  - "### DEMAND SIGNALS (INDIA)"
+  - "### USER URGENCY"
+  - "### RETENTION POTENTIAL"
+  - "### WILLINGNESS TO PAY (REALITY CHECK)"
+  - "### PMF RISKS"
+  - "### PMF IMPROVEMENT STRATEGY"
+- If any PMF subsection is missing, regenerate internally and output the full corrected report.
 `;
 };
 
@@ -275,7 +285,7 @@ app.post('/analyze', async (req, res) => {
         { role: 'user', content: `${USER_PROMPT(req.body)}\n\nDATASET CONTEXT:\n${datasetContext}` }
       ],
       temperature: 0.35,
-      max_tokens: 2600
+      max_tokens: 3200
     });
 
     const responseText = completion.choices?.[0]?.message?.content || 'No response from the model.';

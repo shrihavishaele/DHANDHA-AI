@@ -38,7 +38,7 @@ module.exports = async (req, res) => {
         { role: 'user', content: `${USER_PROMPT(body)}\n\nDATASET CONTEXT:\n${datasetContext}` }
       ],
       temperature: 0.35,
-      max_tokens: 2600
+      max_tokens: 3200
     });
 
     const responseText = completion.choices?.[0]?.message?.content || 'No response from the model.';
