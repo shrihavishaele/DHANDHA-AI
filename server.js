@@ -40,124 +40,114 @@ OUTPUT FORMAT — YOU MUST FOLLOW THIS EXACTLY. USE THESE EXACT HEADINGS AND NUM
 const USER_PROMPT = (input) => {
   const { idea } = input;
 
-  const modeSection = `MODE 1: SIMPLE
+  return `
 Startup Idea: ${idea || ''}
-`;
 
-  return `${modeSection}
-MANDATORY DISCLAIMER (SHOW FIRST):
-This analysis is based on Indian datasets (data.gov.in, RBI, DPIIT, IBEF, etc.), city-level economic indicators, and behavioral scoring models.
-Some values are estimated where exact data is unavailable.
-This is a decision-support system and does not guarantee outcomes.
+OUTPUT FORMAT - YOU MUST FOLLOW THIS EXACTLY. USE THESE EXACT HEADINGS AND NUMBERING. NO DEVIATION.
 
-STEP 1: INPUT INTERPRETATION
+# STARTUP VALIDATION REPORT
 
-IF SIMPLE MODE:
-- Infer:
-  - Target Customer
-  - Problem
-  - Solution
-  - Revenue Model
-  - Geography
-  - Category
-- Clearly label all assumptions
+## 1. YOUR IDEA
+[Rewrite the idea in 1-2 sharp sentences. No fluff.]
 
-IF ADVANCED MODE:
-- Use provided inputs as truth
-- Infer only missing gaps
-- Flag inconsistencies
+## 2. VERDICT
+*[PROCEED / PIVOT NEEDED / NOT VIABLE]*
+[4-6 lines. Sharp. Honest. Reference data. No padding.]
 
-STEP 2: DIMENSIONS TO ANALYZE
+## 3. IDEA SCORES (0-10)
+- Problem Clarity: [Score]
+- Market Size: [Score]
+- Willingness to Pay: [Score]
+- Competition Risk: [Score]
+- Execution Feasibility: [Score]
 
-1. PROBLEM VALIDATION
-- Is this a real problem in India?
-- Which segment (urban, rural, tier 1/2/3) faces this?
-- Frequency of occurrence?
-- Painkiller vs vitamin?
+## 4. INDIA OPPORTUNITY HEATMAP
+*Ranking of top 10-15 Indian cities:*
+1. [City Name] - [Score]/100
+2. [City Name] - [Score]/100
+3. [City Name] - [Score]/100
+4. [City Name] - [Score]/100
+5. [City Name] - [Score]/100
+6. [City Name] - [Score]/100
+7. [City Name] - [Score]/100
+8. [City Name] - [Score]/100
+9. [City Name] - [Score]/100
+10. [City Name] - [Score]/100
+11. [City Name] - [Score]/100
+12. [City Name] - [Score]/100
+13. [City Name] - [Score]/100
+14. [City Name] - [Score]/100
+15. [City Name] - [Score]/100
 
-2. TARGET MARKET (TAM, SAM, SOM)
-- Estimate Indian market size realistically with rough INR numbers or customer counts
-- Identify paying customer segment
-- Provide TAM/SAM/SOM where possible and explain the assumptions
-- Mention affordability constraints in INR
+*TOP 3 CITIES TO LAUNCH FIRST:*
+* *[City 1]:* [Why - reference income, competition, jugaad risk, trust speed]
+* *[City 2]:* [Why]
+* *[City 3]:* [Why]
 
-3. INDIAN USER BEHAVIOR
-- Will Indians actually pay?
-- Cultural or habit barriers?
-- Is jugaad already solving this?
+## 5. FULL MARKET ANALYSIS
 
-4. SOCIAL & SEARCH SIGNALS
-- Use social media and search demand signals where possible (Reddit, Google Trends, forums, WhatsApp/Telegram discussions).
-- Identify whether online conversations show real interest, skepticism, or price resistance.
-- Highlight any social buzz or negative sentiment that would affect adoption.
+### MARKET REALITY
+*TAM/SAM:* [In INR crores. Be specific.]
+*Real Demand:* [What real data or signals show this demand exists in India]
 
-5. COMPETITION ANALYSIS (INDIA FOCUS)
-- Existing Indian startups/companies solving this
-- Indirect competitors
-- Why they succeeded or failed
+### MARKET GAP
+[What existing players are failing at. Why this gap exists. Be specific.]
 
-5. DIFFERENTIATION
-- What makes this unique in India?
-- Is the moat strong or easily copyable?
+### COMPETITOR LANDSCAPE
+*Direct Competitors:*
+* *[Competitor Name]:* [Strength / weakness in Indian context]
+* *[Competitor Name]:* [Strength / weakness]
 
-5.1 MARKET GAP / GAME-CHANGER
-- Identify if the idea has a real, defensible gap in the Indian market.
-- Can this be a game-changing feature, not just a marginal improvement?
-- If no clear gap exists, say it plainly and do not sugarcoat it.
-- If a game-changing gap exists, explain it clearly and precisely.
+*Indirect Competitors:*
+* *[Category]:* [How they compete informally]
 
-6. MONETIZATION
-- Revenue model (subscription, commission, ads, etc.)
-- Expected pricing in INR
-- Basic unit economics
+### DIFFERENTIATION
+1. *[Move 1]:* [Concrete India-specific execution advantage]
+2. *[Move 2]:* [Concrete change]
+3. *[Move 3]:* [Concrete change]
 
-7. DISTRIBUTION STRATEGY
-- How to acquire users in India?
-- Channels (WhatsApp, Instagram, offline, etc.)
-- CAC vs LTV thinking
+### JUGAAD CHECK - INFORMAL COMPETITION
+[What WhatsApp groups, local vendors, family networks, or street-level solutions already solve this problem informally. How strong is the jugaad. Does it kill the idea or can you beat it.]
 
-8. REGULATIONS & RISKS (INDIA)
-- Legal, compliance, or policy risks
-- Government dependencies
+### CULTURAL INTELLIGENCE
+[Trust factors, religion, caste, regional habits, family decision-making dynamics that affect this idea. City-specific behavioral differences.]
 
-9. EXECUTION COMPLEXITY
-- Tech difficulty
-- Operational challenges in India
-- Supply chain/logistics issues
+### PRICE SENSITIVITY & UNIT ECONOMICS
+[What Indian customers will actually pay at each tier. CAC estimate. LTV. Break-even timeline. All in rupees.]
 
-10. SCALABILITY IN INDIA
-- Can it scale across states with language/culture differences?
-- Expansion potential
+### RISK FLAGS
+* *Regulatory:* [Specific regulation risk - GST, RBI, FSSAI, DPDP, etc.]
+* *Execution:* [Ground-level execution risk]
+* *Competition:* [Competitive risk]
+* *Market:* [Market timing or demand risk]
 
-11. PRODUCT-MARKET FIT
-- Does the idea solve a clear pain point for a defined paying Indian segment?
-- Will customers want it enough to buy and retain it?
-- How strong is the product-market fit signal in this market?
+## 6. YOUR NEXT 90 DAYS (ACTION PLAN)
+[If VERDICT is PROCEED use the weekly timeline below. If PIVOT NEEDED or NOT VIABLE replace with a RECOMMENDED FIX paragraph explaining what must change before any building happens.]
 
-12. CITY RANKING
-- Rank 3-5 Indian cities where this idea is most likely to work.
-- Also identify 1-2 cities where the idea is a weaker fit and explain why.
-- Use city-level demand, affordability, logistics, student population, and local competition as the basis.
+### Week 1-2
+* [Specific, real-world action - not generic startup advice]
+* [Specific action]
 
-13. INDIAN ADVANTAGE CHECK
-- Why will this work specifically in India?
-- Or why it might fail in India?
+### Week 3-4
+* [Specific action]
+* [Specific action]
 
-Return only the final report in plain text using these headings exactly:
-IDEA SUMMARY
-SCORING
-TARGET MARKET / MARKET SIZE
-RED FLAGS
-COMPETITION / COMPETITOR LANDSCAPE
-OPPORTUNITIES
-PRODUCT-MARKET FIT
-CITY RANKING
-VERDICT
-IMPROVEMENT SUGGESTIONS
-GO-TO-MARKET STRATEGY
+### Week 5-6
+* [Specific action]
+* [Specific action]
 
-Do not print prompt templates, numbered instructions, or meta text such as FINAL OUTPUT FORMAT.
-Keep the report concise, detailed, India-focused, and brutally honest.
+### Week 7-8
+* [Specific action]
+* [Specific action]
+
+### Week 9-12
+* [Specific action]
+* [Specific action]
+
+Rules:
+- Return only the completed report with real values; do not include bracket placeholders.
+- Use India-specific reasoning and city-level evidence.
+- Do not output any prompt instructions, metadata, or explanations outside the report.
 `;
 };
 
