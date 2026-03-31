@@ -275,7 +275,7 @@ app.post('/analyze', async (req, res) => {
         { role: 'user', content: `${USER_PROMPT(req.body)}\n\nDATASET CONTEXT:\n${datasetContext}` }
       ],
       temperature: 0.35,
-      max_tokens: 1500
+      max_tokens: 2600
     });
 
     const responseText = completion.choices?.[0]?.message?.content || 'No response from the model.';
