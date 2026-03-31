@@ -75,16 +75,20 @@ async function initCredentialDisplay() {
         body: JSON.stringify(requestBody)
       });
 
-      let data;
-      try {
-        data = await response.json();
-      } catch (parseError) {
-        const text = await response.text();
-        throw new Error(`Server returned non-JSON response: ${text.slice(0, 240)}`);
+      const responseText = await response.text();
+      let data = {};
+      if (responseText) {
+        try {
+          data = JSON.parse(responseText);
+        } catch (parseError) {
+          if (response.ok) {
+            throw new Error(`Server returned non-JSON response: ${responseText.slice(0, 240)}`);
+          }
+        }
       }
 
       if (!response.ok) {
-        const message = data?.error || `Request failed with status ${response.status}`;
+        const message = data?.error || responseText || `Request failed with status ${response.status}`;
         throw new Error(message);
       }
 
