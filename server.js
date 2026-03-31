@@ -143,77 +143,21 @@ STEP 2: DIMENSIONS TO ANALYZE
 - Why will this work specifically in India?
 - Or why it might fail in India?
 
-STEP 3: FINAL OUTPUT FORMAT
+Return only the final report in plain text using these headings exactly:
+IDEA SUMMARY
+SCORING
+TARGET MARKET / MARKET SIZE
+RED FLAGS
+COMPETITION / COMPETITOR LANDSCAPE
+OPPORTUNITIES
+PRODUCT-MARKET FIT
+CITY RANKING
+VERDICT
+IMPROVEMENT SUGGESTIONS
+GO-TO-MARKET STRATEGY
 
-1. IDEA SUMMARY (2-3 lines)
-
-2. SCORING (out of 10 for each)
-- Problem Strength:
-- Market Size:
-- Competition:
-- Monetization:
-- Execution Ease:
-- Scalability:
-
-3. TARGET MARKET / MARKET SIZE
-- Provide a clear TAM/SAM/SOM estimate or a conservative market number
-- Include the relevant customer segment and pricing assumptions in INR
-- Highlight whether the market is large enough for the business model
-
-4. RED FLAGS (critical issues)
-
-5. COMPETITION / COMPETITOR LANDSCAPE
-- List the main direct and indirect competitors in India.
-- Explain why they are a threat or a benchmark.
-- Highlight gaps your idea can exploit.
-
-6. OPPORTUNITIES (hidden advantages)
-
-7. PRODUCT-MARKET FIT
-- Does this idea have product-market fit in India?
-- Explain the strength of fit and what must be true for it to work.
-
-8. CITY RANKING
-- Rank the cities where this idea is most likely to work and the cities where it is weaker.
-- Explain the drivers behind the top and weak city fits.
-
-9. VERDICT:
-- Strong / Moderate / Weak
-- Clear reasoning
-- If the idea is not strong enough for a positive verdict, say NO rather than sugarcoating it.
-
-10. IMPROVEMENT SUGGESTIONS:
-- How to make this idea stronger in India
-
-11. GO-TO-MARKET STRATEGY (INDIA-SPECIFIC)
-
-IMPORTANT:
-- Be brutally honest like a VC
-- Avoid generic startup advice
-- Think in Indian context (pricing, behavior, infra)
-- Use realistic assumptions, not global comparisons
-- If direct social/search data is unavailable, infer based on Indian online behavior and search demand patterns.
-- Identify a real market gap and whether there is a true game-changing feature.
-- If no clear gap exists, say it plainly and do not sugarcoat.
-- If market gap is weak or absent, do not imply it is strong.
-- Every claim or verdict must be explained in detail; do not leave a positive or negative label unsupported.
-- Internally generate the full report first as LaTeX source, then use that LaTeX structure to produce the final plain-text report. Do not expose raw LaTeX in the final output; keep the visible response as the clean sectioned report only.
-
-FINAL INSTRUCTION:
-- Output only the report sections listed below in plain text.
-- Start with IDEA SUMMARY, then SCORING, TARGET MARKET / MARKET SIZE, MARKET GAP / GAME-CHANGER, RED FLAGS, COMPETITION / COMPETITOR LANDSCAPE, OPPORTUNITIES, PRODUCT-MARKET FIT, CITY RANKING, VERDICT, IMPROVEMENT SUGGESTIONS, GO-TO-MARKET STRATEGY.
-- Use uppercase section headings followed by short paragraphs or dash bullets.
-- For SCORING, list exactly six items in the format 'Name: X/10'.
-- If the idea does not deserve a strong verdict, write NO or Weak rather than a positive-sounding conclusion.
-- If you say anything important (gap, red flag, verdict, scoring), explain it in detail rather than only labeling it.
-- Do not include HTML, JSON, code fences, or unrelated commentary.
-- Do not add extra disclaimers or metadata in the main report.
-
-STRICT RULES:
-- No fluff
-- No generic advice
-- Present a professional VC-grade report
-- Always justify each claim with India-focused logic
+Do not print prompt templates, numbered instructions, or meta text such as FINAL OUTPUT FORMAT.
+Keep the report concise, detailed, India-focused, and brutally honest.
 `;
 };
 

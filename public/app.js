@@ -92,8 +92,9 @@ async function initCredentialDisplay() {
         throw new Error(message);
       }
 
+      const cleanedResult = cleanReportText(data.result || 'No analysis received.');
       statusEl.textContent = 'Analysis complete.';
-      resultEl.innerHTML = renderResultHtml(data.result || 'No analysis received.');
+      resultEl.innerHTML = renderResultHtml(cleanedResult || 'No analysis received.');
       resultCardEl.classList.remove('hidden');
       downloadBtn.classList.remove('hidden');
     } catch (error) {
@@ -248,21 +249,43 @@ function loadJsPDF() {
 
 function cleanReportText(rawText) {
   const lines = String(rawText || '').split(/\r?\n/);
+  const headingNormalizations = [
+    { pattern: /^IDEA SUMMARY \(2-3 lines\)$/i, replacement: 'IDEA SUMMARY' },
+    { pattern: /^SCORING \(out of 10 for each\)$/i, replacement: 'SCORING' },
+    { pattern: /^RED FLAGS \(critical issues\)$/i, replacement: 'RED FLAGS' }
+  ];
+
   const instructionPatterns = [
     /^FINAL OUTPUT FORMAT$/i,
-    /^IDEA SUMMARY \(2-3 lines\)$/i,
-    /^SCORING \(out of 10 for each\)$/i,
+    /^STEP \d+:/i,
+    /^MANDATORY DISCLAIMER/i,
+    /^FINAL INSTRUCTION:?$/i,
+    /^STRICT RULES:?$/i,
     /^Provide a clear TAM\/SAM\/SOM estimate/i,
     /^Include the relevant customer segment/i,
     /^Highlight whether the market is large enough/i,
-    /^List the main direct and indirect competitors in India:?$/i
+    /^List the main direct and indirect competitors in India:?$/i,
+    /^Do not print prompt templates/i,
+    /^Output only the report sections/i,
+    /^Use uppercase section headings/i,
+    /^For SCORING, list exactly six items/i,
+    /^Do not include HTML, JSON/i,
+    /^No fluff$/i,
+    /^No generic advice$/i
   ];
 
-  const cleaned = lines.filter((line) => {
-    const trimmed = line.trim();
+  const cleaned = lines
+    .map((line) => {
+      let normalized = line.trim();
+      headingNormalizations.forEach(({ pattern, replacement }) => {
+        if (pattern.test(normalized)) normalized = replacement;
+      });
+      return normalized;
+    })
+    .filter((trimmed) => {
     if (!trimmed) return true;
     return !instructionPatterns.some((pattern) => pattern.test(trimmed));
-  });
+    });
 
   return cleaned.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 }
