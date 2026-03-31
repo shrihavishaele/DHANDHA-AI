@@ -20,64 +20,69 @@ let hasServerConfig = false;
 
 async function initCredentialDisplay() {
   try {
-    const response = await fetch('/config');
-    if (response.ok) {
-      const data = await response.json();
-      hasServerConfig = data.hasNvidiaConfig;
+      const response = await fetch('/api/config');
+      if (response.ok) {
+        const data = await response.json();
+        hasServerConfig = data.hasNvidiaConfig;
+      }
+    } catch (err) {
+      console.warn('Unable to fetch config status', err);
     }
-  } catch (err) {
-    console.warn('Unable to fetch config status', err);
+
+    const storedValuesExist = Boolean(storedApiKey || storedApiUrl);
+    if (storedValuesExist || hasServerConfig) {
+      credentialsPanel?.classList.add('hidden');
+      credentialsNotice?.classList.remove('hidden');
+    } else {
+      credentialsPanel?.classList.remove('hidden');
+      credentialsNotice?.classList.add('hidden');
+    }
   }
 
-  const storedValuesExist = Boolean(storedApiKey || storedApiUrl);
-  if (storedValuesExist || hasServerConfig) {
-    credentialsPanel?.classList.add('hidden');
-    credentialsNotice?.classList.remove('hidden');
-  } else {
-    credentialsPanel?.classList.remove('hidden');
-    credentialsNotice?.classList.add('hidden');
-  }
-}
+  initCredentialDisplay();
 
-initCredentialDisplay();
+  analyzeBtn.addEventListener('click', async () => {
+    const idea = ideaEl.value.trim();
+    const apiKey = apiKeyEl.value.trim() || localStorage.getItem('nvidiaApiKey');
+    const apiUrl = apiUrlEl.value.trim() || localStorage.getItem('nvidiaApiUrl');
 
-analyzeBtn.addEventListener('click', async () => {
-  const idea = ideaEl.value.trim();
-  const apiKey = apiKeyEl.value.trim() || localStorage.getItem('nvidiaApiKey');
-  const apiUrl = apiUrlEl.value.trim() || localStorage.getItem('nvidiaApiUrl');
+    if (apiKey) localStorage.setItem('nvidiaApiKey', apiKey);
+    if (apiUrl) localStorage.setItem('nvidiaApiUrl', apiUrl);
 
-  if (apiKey) localStorage.setItem('nvidiaApiKey', apiKey);
-  if (apiUrl) localStorage.setItem('nvidiaApiUrl', apiUrl);
+    if (!idea) {
+      statusEl.textContent = 'Please enter an idea to analyze.';
+      return;
+    }
 
-  if (!idea) {
-    statusEl.textContent = 'Please enter an idea to analyze.';
-    return;
-  }
+    resultCardEl.classList.add('hidden');
+    downloadBtn.classList.add('hidden');
+    resultEl.textContent = '';
+    analyzeBtn.classList.add('loading');
+    spinner.classList.remove('hidden');
+    analyzeBtn.disabled = true;
+    statusEl.textContent = 'Analyzing...';
 
-  resultCardEl.classList.add('hidden');
-  downloadBtn.classList.add('hidden');
-  resultEl.textContent = '';
-  analyzeBtn.classList.add('loading');
-  spinner.classList.remove('hidden');
-  analyzeBtn.disabled = true;
-  statusEl.textContent = 'Analyzing...';
+    try {
+      const requestBody = { idea };
+      if (apiKey) requestBody.apiKey = apiKey;
+      if (apiUrl) requestBody.apiUrl = apiUrl;
 
-  try {
-    const requestBody = { idea };
-    if (apiKey) requestBody.apiKey = apiKey;
-    if (apiUrl) requestBody.apiUrl = apiUrl;
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      });
 
-    const response = await fetch('/analyze', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestBody)
-    });
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        const text = await response.text();
+        throw new Error(`Server returned non-JSON response: ${text.slice(0, 240)}`);
+      }
 
-    const data = await response.json();
-    if (!response.ok) {
-      statusEl.textContent = `Error: ${data.error || response.statusText}`;
       resultCardEl.classList.add('hidden');
       return;
     }
