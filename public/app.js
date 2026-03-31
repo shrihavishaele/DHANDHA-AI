@@ -5,6 +5,7 @@ const statusEl = document.getElementById('status');
 const resultCardEl = document.getElementById('resultCard');
 const resultEl = document.getElementById('result');
 const downloadBtn = document.getElementById('downloadBtn');
+let latestCleanedReportText = '';
 
   analyzeBtn.addEventListener('click', async () => {
     const idea = ideaEl.value.trim();
@@ -17,6 +18,7 @@ const downloadBtn = document.getElementById('downloadBtn');
     resultCardEl.classList.add('hidden');
     downloadBtn.classList.add('hidden');
     resultEl.textContent = '';
+    latestCleanedReportText = '';
     analyzeBtn.classList.add('loading');
     spinner.classList.remove('hidden');
     analyzeBtn.disabled = true;
@@ -51,6 +53,7 @@ const downloadBtn = document.getElementById('downloadBtn');
       }
 
       const cleanedResult = cleanReportText(data.result || 'No analysis received.');
+      latestCleanedReportText = cleanedResult;
       statusEl.textContent = 'Analysis complete.';
       resultEl.innerHTML = renderResultHtml(cleanedResult || 'No analysis received.');
       resultCardEl.classList.remove('hidden');
@@ -249,7 +252,7 @@ function cleanReportText(rawText) {
 }
 
 async function downloadPdf() {
-  if (!resultEl.textContent) return;
+  if (!latestCleanedReportText) return;
   const jsPDF = getJsPDF() || await loadJsPDF().catch((err) => {
     console.error(err);
     alert('PDF generation failed: jsPDF library could not be loaded. Please refresh or check your network.');
@@ -410,7 +413,7 @@ async function downloadPdf() {
   doc.line(margin, y, 210 - margin, y);
   y += 10;
 
-  const cleanedText = cleanReportText(resultEl.textContent || '');
+  const cleanedText = latestCleanedReportText;
   if (!cleanedText) {
     alert('No clean report content available to export. Please run analysis again.');
     return;
