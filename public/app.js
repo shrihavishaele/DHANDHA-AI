@@ -2,6 +2,7 @@ const ideaEl = document.getElementById('idea');
 const analyzeBtn = document.getElementById('analyzeBtn');
 const spinner = document.getElementById('spinner');
 const statusEl = document.getElementById('status');
+const loadingNoteEl = document.getElementById('loadingNote');
 const resultCardEl = document.getElementById('resultCard');
 const resultEl = document.getElementById('result');
 const downloadBtn = document.getElementById('downloadBtn');
@@ -21,6 +22,7 @@ let latestCleanedReportText = '';
     latestCleanedReportText = '';
     analyzeBtn.classList.add('loading');
     spinner.classList.remove('hidden');
+    loadingNoteEl.classList.remove('hidden');
     analyzeBtn.disabled = true;
     statusEl.textContent = 'Analyzing...';
 
@@ -63,6 +65,7 @@ let latestCleanedReportText = '';
     } finally {
       analyzeBtn.classList.remove('loading');
       spinner.classList.add('hidden');
+      loadingNoteEl.classList.add('hidden');
       analyzeBtn.disabled = false;
     }
   });

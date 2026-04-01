@@ -261,7 +261,7 @@ app.get('/config', (req, res) => {
   });
 });
 
-app.post('/analyze', async (req, res) => {
+app.post(['/analyze', '/api/analyze'], async (req, res) => {
   try {
     const { idea, apiKey } = req.body;
     if (!idea || !idea.trim()) {

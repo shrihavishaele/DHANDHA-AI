@@ -170,6 +170,11 @@
       50% { transform: scale(1.02); }
     }
 
+    @keyframes fadeInSoft {
+      from { opacity: 0; transform: translateY(3px); }
+      to { opacity: 0.92; transform: translateY(0); }
+    }
+
     .help-text {
       color: var(--muted);
       font-size: 0.9rem;
@@ -180,6 +185,17 @@
       margin-top: 18px;
       font-weight: 600;
       color: var(--saffron);
+    }
+
+    .loading-note {
+      margin-top: 6px;
+      font-family: 'Newsreader', serif;
+      font-size: 1.02rem;
+      font-style: italic;
+      letter-spacing: 0.02em;
+      color: #8a6a44;
+      opacity: 0.92;
+      animation: fadeInSoft 0.35s ease;
     }
 
     .result-card {
@@ -321,6 +337,7 @@
       </div>
 
       <div id="status" class="status"></div>
+      <div id="loadingNote" class="loading-note hidden">Great things take time.</div>
 
       <div class="result-card hidden" id="resultCard">
         <h3>Analysis result</h3>
