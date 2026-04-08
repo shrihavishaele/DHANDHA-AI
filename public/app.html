@@ -22,6 +22,7 @@
       background: var(--cream);
       color: var(--ink);
       font-family: 'DM Sans', 'Segoe UI', Arial, sans-serif;
+      line-height: 1.6;
       min-height: 100vh;
     }
 
@@ -309,6 +310,146 @@
       .hero-title { font-size: 3rem; }
       .panel { padding: 24px; }
       nav { padding: 20px; }
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        padding: 16px 18px;
+      }
+
+      .main {
+        padding: 0 18px 40px;
+      }
+
+      .hero {
+        padding: 16px 0 28px;
+      }
+
+      .hero-title {
+        font-size: clamp(2rem, 8vw, 2.8rem);
+        line-height: 1.08;
+        letter-spacing: -1.1px;
+        margin-bottom: 14px;
+      }
+
+      .hero-sub {
+        font-size: clamp(0.95rem, 3.5vw, 1rem);
+        line-height: 1.65;
+      }
+
+      .panel {
+        width: 100%;
+        padding: 18px;
+        border-radius: 20px;
+      }
+
+      .panel h2 {
+        font-size: clamp(1.35rem, 5vw, 1.65rem);
+        margin-bottom: 12px;
+      }
+
+      .field {
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      label {
+        font-size: 0.92rem;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 14px;
+        font-size: 1rem;
+        border-radius: 14px;
+      }
+
+      textarea {
+        min-height: 120px;
+      }
+
+      .radio-group {
+        gap: 10px;
+      }
+
+      .radio-group label {
+        width: 100%;
+      }
+
+      .button-row {
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      button,
+      .download-btn {
+        width: 100%;
+        padding: 14px 18px;
+        font-size: 1rem;
+      }
+
+      .spinner {
+        width: 30px;
+        height: 30px;
+        border-width: 3px;
+      }
+
+      .status {
+        margin-top: 14px;
+        line-height: 1.5;
+      }
+
+      .loading-note {
+        font-size: 0.95rem;
+        line-height: 1.45;
+      }
+
+      .result-card {
+        width: 100%;
+        margin-top: 24px;
+        padding: 18px;
+        border-radius: 20px;
+      }
+
+      .result-card h3 {
+        font-size: 1.2rem;
+      }
+
+      .result-body,
+      #rawResult {
+        padding: 18px;
+        font-size: 0.98rem;
+        line-height: 1.65;
+        border-radius: 16px;
+      }
+
+      .result-body h3 {
+        font-size: 1.12rem;
+      }
+
+      .result-body h4 {
+        font-size: 1rem;
+      }
+
+      .result-body p,
+      .result-body li {
+        line-height: 1.6;
+      }
+
+      .result-body blockquote {
+        padding: 14px 16px;
+        margin: 1rem 0;
+      }
+
+      .result-spacer {
+        height: 1rem;
+      }
+
+      .download-btn {
+        margin-top: 16px;
+      }
     }
   </style>
 </head>
