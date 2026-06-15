@@ -29,7 +29,7 @@ Example `.env`:
 ```
 NVIDIA_API_URL=https://integrate.api.nvidia.com/v1
 NVIDIA_API_KEY=your-nvidia-api-key
-NVIDIA_MODEL=meta/llama-3.1-405b-instruct
+NVIDIA_MODEL=nvidia/nemotron-3-ultra-550b-a55b
 ```
 
 The app will also remember the API URL and key in your browser localStorage for future visits.

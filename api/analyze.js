@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
 
     const nvidiaKey = (body.apiKey || process.env.NVIDIA_API_KEY || '').trim();
     const nvidiaUrl = (body.apiUrl || process.env.NVIDIA_API_URL || 'https://integrate.api.nvidia.com/v1').trim();
-    const nvidiaModel = body.model || process.env.NVIDIA_MODEL || 'meta/llama-3.1-405b-instruct';
+    const nvidiaModel = body.model || process.env.NVIDIA_MODEL || 'nvidia/nemotron-3-ultra-550b-a55b';
 
     if (!nvidiaKey) {
       return res.status(400).json({ error: 'NVIDIA API key is required. Provide it in the form or set NVIDIA_API_KEY.' });
@@ -31,18 +31,24 @@ module.exports = async (req, res) => {
 
     const client = new OpenAI({ apiKey: nvidiaKey, baseURL: nvidiaUrl });
     const datasetContext = buildDatasetContext(body);
-    const completion = await client.chat.completions.create({
-      model: nvidiaModel,
-      messages: [
-        { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: `${USER_PROMPT(body)}\n\nDATASET CONTEXT:\n${datasetContext}` }
-      ],
-      temperature: 0.35,
-      max_tokens: 3200
-    });
+    const completion = await Promise.race([
+      client.chat.completions.create({
+        model: nvidiaModel,
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: `${USER_PROMPT(body)}\n\nDATASET CONTEXT:\n${datasetContext}` }
+        ],
+        temperature: 0.5,
+        top_p: 0.9,
+        max_tokens: 1200,
+        stream: false
+      }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Model timed out. Try again or use a faster model in .env.')), 90000))
+    ]);
 
-    const responseText = completion.choices?.[0]?.message?.content || 'No response from the model.';
-    return res.status(200).json({ result: responseText });
+    const responseText = completion.choices?.[0]?.message?.content || '';
+
+    return res.status(200).json({ result: responseText || 'No response from the model.' });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: error.message || 'Unexpected error.' });
