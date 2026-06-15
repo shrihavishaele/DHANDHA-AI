@@ -55,9 +55,10 @@ let latestCleanedReportText = '';
       }
 
       const cleanedResult = cleanReportText(data.result || 'No analysis received.');
-      latestCleanedReportText = cleanedResult;
+      const normalizedResult = ensureFullMarketAnalysisSections(cleanedResult);
+      latestCleanedReportText = normalizedResult;
       statusEl.textContent = 'Analysis complete.';
-      resultEl.innerHTML = renderResultHtml(cleanedResult || 'No analysis received.');
+      resultEl.innerHTML = renderResultHtml(normalizedResult || 'No analysis received.');
       resultCardEl.classList.remove('hidden');
       downloadBtn.classList.remove('hidden');
     } catch (error) {
@@ -252,6 +253,55 @@ function cleanReportText(rawText) {
     });
 
   return cleaned.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+
+function ensureFullMarketAnalysisSections(rawText) {
+  const text = String(rawText || '').trim();
+  if (!text) return text;
+
+  if (/##\s*5\.\s*FULL MARKET ANALYSIS/i.test(text) && /###\s*MARKET REALITY/i.test(text)) {
+    return text;
+  }
+
+  const scaffold = [
+    '## 5. FULL MARKET ANALYSIS',
+    '',
+    '### MARKET REALITY',
+    '*TAM/SAM:* N/A',
+    '*Real Demand:* N/A',
+    '',
+    '### MARKET GAP',
+    'N/A',
+    '',
+    '### COMPETITOR LANDSCAPE',
+    '*Direct Competitors:*',
+    '* N/A: N/A',
+    '',
+    '*Indirect Competitors:*',
+    '* N/A: N/A',
+    '',
+    '### DIFFERENTIATION',
+    '1. *N/A:* N/A',
+    '2. *N/A:* N/A',
+    '3. *N/A:* N/A',
+    '',
+    '### JUGAAD CHECK - INFORMAL COMPETITION',
+    'N/A',
+    '',
+    '### CULTURAL INTELLIGENCE',
+    'N/A',
+    '',
+    '### PRICE SENSITIVITY & UNIT ECONOMICS',
+    'N/A',
+    '',
+    '### RISK FLAGS',
+    '* *Regulatory:* N/A',
+    '* *Execution:* N/A',
+    '* *Competition:* N/A',
+    '* *Market:* N/A'
+  ].join('\n');
+
+  return `${text}\n\n${scaffold}`.replace(/\n{3,}/g, '\n\n').trim();
 }
 
 async function downloadPdf() {

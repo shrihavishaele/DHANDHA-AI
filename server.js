@@ -90,6 +90,8 @@ OUTPUT FORMAT - YOU MUST FOLLOW THIS EXACTLY. USE THESE EXACT HEADINGS AND NUMBE
 *TAM/SAM:* [In INR crores. Be specific.]
 *Real Demand:* [What real data or signals show this demand exists in India]
 
+If you do not have exact values, still include this section and write N/A rather than omitting the heading.
+
 ### MARKET GAP
 [What existing players are failing at. Why this gap exists. Be specific.]
 
@@ -120,6 +122,8 @@ OUTPUT FORMAT - YOU MUST FOLLOW THIS EXACTLY. USE THESE EXACT HEADINGS AND NUMBE
 * *Execution:* [Ground-level execution risk]
 * *Competition:* [Competitive risk]
 * *Market:* [Market timing or demand risk]
+
+Do not omit any of the headings above. If a subsection has no data, write N/A.
 
 ## 6. YOUR NEXT 90 DAYS (ACTION PLAN)
 [If VERDICT is PROCEED use the weekly timeline below. If PIVOT NEEDED or NOT VIABLE replace with a RECOMMENDED FIX paragraph explaining what must change before any building happens.]
