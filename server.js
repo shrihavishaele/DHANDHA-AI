@@ -259,9 +259,9 @@ function buildDatasetContext(body) {
 }
 
 app.get('/config', (req, res) => {
-  const groqKey = (process.env.GROQ_API_KEY || '').trim();
+  const nvidiaKey = (process.env.NVIDIA_API_KEY || '').trim();
   res.json({
-    hasGroqConfig: Boolean(groqKey)
+    hasNvidiaConfig: Boolean(nvidiaKey)
   });
 });
 
@@ -272,26 +272,31 @@ app.post(['/analyze', '/api/analyze'], async (req, res) => {
       return res.status(400).json({ error: 'Idea is required.' });
     }
 
-    const groqKey = (apiKey || process.env.GROQ_API_KEY || '').trim();
-    const groqModel = (req.body.model || process.env.GROQ_MODEL || 'openai/gpt-oss-120b').trim();
+    const nvidiaKey = (apiKey || process.env.NVIDIA_API_KEY || '').trim();
+    const nvidiaModel = (req.body.model || process.env.NVIDIA_MODEL || 'nvidia/nemotron-3-super-120b-a12b').trim();
+    const nvidiaApiUrl = (process.env.NVIDIA_API_URL || 'https://integrate.api.nvidia.com/v1').trim();
 
-    if (!groqKey) {
-      return res.status(400).json({ error: 'Groq API key is required. Set GROQ_API_KEY in .env.' });
+    if (!nvidiaKey) {
+      return res.status(400).json({ error: 'NVIDIA API key is required. Set NVIDIA_API_KEY in .env.' });
     }
 
-    const client = new OpenAI({ apiKey: groqKey, baseURL: 'https://api.groq.com/openai/v1' });
+    const client = new OpenAI({ apiKey: nvidiaKey, baseURL: nvidiaApiUrl });
     const datasetContext = buildDatasetContext(req.body);
     const completion = await Promise.race([
       client.chat.completions.create({
-        model: groqModel,
+        model: nvidiaModel,
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           { role: 'user', content: `${USER_PROMPT(req.body)}\n\nDATASET CONTEXT:\n${datasetContext}` }
         ],
-        temperature: 0.5,
-        top_p: 0.9,
-        max_completion_tokens: 1200,
-        stream: false
+        temperature: 1,
+        top_p: 0.95,
+        max_tokens: Number(process.env.NVIDIA_MAX_TOKENS || 16384),
+        stream: false,
+        extra_body: {
+          chat_template_kwargs: { enable_thinking: true },
+          reasoning_budget: Number(process.env.NVIDIA_REASONING_BUDGET || 16384)
+        }
       }),
       new Promise((_, reject) => setTimeout(() => reject(new Error('Model timed out. Try again or use a faster model in .env.')), 90000))
     ]);

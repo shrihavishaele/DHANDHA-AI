@@ -19,7 +19,7 @@ A minimal web app to evaluate Indian startup ideas using your provided investor-
 ## Usage
 - Paste your startup idea into the textarea
 - Choose `Simple` for basic idea input or `Advanced` to provide additional fields
-- Put your Groq API key in `.env` once, then click `Analyze idea`
+- Put your NVIDIA API key in `.env` once, then click `Analyze idea`
 - Click `Analyze idea`
 
 If you want to avoid entering credentials every time, create a `.env` file in the project root with the values below.
@@ -27,8 +27,9 @@ If you want to avoid entering credentials every time, create a `.env` file in th
 Example `.env`:
 
 ```
-GROQ_API_KEY=your-groq-api-key
-GROQ_MODEL=openai/gpt-oss-120b
+NVIDIA_API_KEY=your-nvidia-api-key
+NVIDIA_API_URL=https://integrate.api.nvidia.com/v1
+NVIDIA_MODEL=nvidia/nemotron-3-super-120b-a12b
 ```
 
 The evaluation now includes India-specific dimensions:
@@ -40,4 +41,4 @@ The evaluation now includes India-specific dimensions:
 - Distribution and regulation
 - Execution complexity and scalability
 
-The app uses the OpenAI SDK with Groq's OpenAI-compatible endpoint and sends your prompt to Groq.
+The app uses the OpenAI SDK with NVIDIA's OpenAI-compatible endpoint and sends your prompt to NVIDIA.
